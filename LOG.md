@@ -13,3 +13,7 @@ End the log with your plan for what to try next.
 - validation: 0.000 (before: 0.000)
 - what it means: what you think the result says
 -->
+
+## 2026-11-06 Starter photo review
+
+> some samples contain letters, and outdoor image samples should be easier to determine relying on the weather, skyline, the way of buildings look etc
