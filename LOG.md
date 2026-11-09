@@ -104,7 +104,7 @@ End the log with your plan for what to try next.
 - This is one balanced run. The two baseline seeds differed by 0.46 percentage points, so the measured improvement is small and does not establish reliable superiority across seeds.
 - Source: results/balanced_seed0/result.json, results/no_text_sample_seed0/result.json and experiments.csv. Training commit: 481c791.
 
-## 2026-11-10 wider_crop (Track A, prepared)
+## 2026-11-10 wider_crop (Track A, running)
 
 - Student approved the proposed crop-area change from 35–100% to 70–100%: "try it."
 - Changed only RandomResizedCrop's scale from (0.35, 1.0) to (0.70, 1.0).
@@ -113,4 +113,5 @@ End the log with your plan for what to try next.
 - Student's reason: "it will help model to think in humane way, i guess. as human thinks more of a scenery instead of small details, perchance"
 - Validation and student interpretation: pending the new run.
 - Local CPU quick check passed (20 steps, 200 validation photos). This is a setup check, not an official experiment result.
-- Next: train wider_crop with seed 0 on Colab and compare with balanced seed 0.
+- Colab pulled training commit 4e6c630 and confirmed seed 0 on CUDA with 44,133 selected photos and 3,906 batches of 64 (249,984 photos).
+- Next: import the completed result and mistake sheets, then compare with balanced seed 0 (0.4989).
