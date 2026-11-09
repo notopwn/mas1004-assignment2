@@ -71,4 +71,4 @@ End the log with your plan for what to try next.
 | Taipei | 0.5457 | 0.5354 |
 
 - Confusion counts relevant to the student's observation: Seoul predicted Busan, 159 to 158; Busan predicted Seoul, 442 to 478; Tokyo predicted Osaka, 431 to 546; Osaka predicted Tokyo, 831 to 838.
-- Source: the three result.json files under results/ and the imported rows in experiments.csv. New mistake-sheet generation is still running on Colab.
+- Source: the three result.json files under results/ and the imported rows in experiments.csv. All five new mistake sheets (48 validation errors per city) finished on Colab, were imported locally, and passed PNG/CSV checks.
