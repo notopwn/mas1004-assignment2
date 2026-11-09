@@ -73,16 +73,33 @@ End the log with your plan for what to try next.
 - Confusion counts relevant to the student's observation: Seoul predicted Busan, 159 to 158; Busan predicted Seoul, 442 to 478; Tokyo predicted Osaka, 431 to 546; Osaka predicted Tokyo, 831 to 838.
 - Source: the three result.json files under results/ and the imported rows in experiments.csv. All five new mistake sheets (48 validation errors per city) finished on Colab, were imported locally, and passed PNG/CSV checks.
 
-## 2026-11-10 balanced (Track A, running)
+## 2026-11-10 balanced (Track A, completed)
 
 - Student request: "lets try giving every city equal training attention. proceed right away"
 - Changed sample_weights to give each training photo weight 1 / number of selected photos in its city. This gives each city an expected 20% share of training draws.
 - Kept the 44,133-photo selection from no_text_sample, including its 124 exclusions. All other recipe settings are unchanged.
 - Direct comparison: no_text_sample seed 0, validation balanced accuracy 0.4938.
 - Student's reason: "this is just a basic idea. to give equal attention, more reasonable&rational."
-- Validation and student interpretation: pending the new run.
+- Validation balanced accuracy: 0.4989 (no_text_sample seed 0: 0.4938), a 0.51 percentage point increase. Training took 2,122.8 seconds (35.4 minutes).
+- Student interpretation: "still not an meaningful improvement, should find better way"
 - Local CPU quick check passed: 20 steps and validation on 200 photos. This is a setup check, not an official experiment result.
 - Colab pulled training commit 481c791 and confirmed seed 0 on CUDA with 44,133 selected photos and 3,906 batches of 64 (249,984 photos).
-- Next: import the completed result and mistake sheets, then compare with no_text_sample seed 0.
+- Imported the completed result and all five mistake sheets (48 confident validation errors per city). Verified PNGs, CSV row counts, full training budget, accuracy from the confusion matrix, recipe hash 7eb0f0acc97f, and unchanged selection hash 4387ca522155.
+- Next: review the mistakes and let the student choose the next change.
 
 - Verified each city has equal total sampling weight. Seed 0 planned draws (of 249,984): seoul 50153, busan 49745, tokyo 50023, osaka 49939, taipei 50124.
+
+### Balanced sampling comparison (seed 0, same 44,133 training photos)
+
+| True city | Previous sampling | Equal city sampling | Change, percentage points |
+| --- | ---: | ---: | ---: |
+| Seoul | 0.5885 | 0.4875 | -10.10 |
+| Busan | 0.3691 | 0.4453 | +7.62 |
+| Tokyo | 0.6114 | 0.5071 | -10.43 |
+| Osaka | 0.3647 | 0.4539 | +8.92 |
+| Taipei | 0.5354 | 0.6005 | +6.51 |
+
+- Overall scores: baseline seed 0, 0.4977; baseline seed 1, 0.4931; no_text_sample seed 0, 0.4938; balanced seed 0, 0.4989.
+- Balanced is 0.12 percentage points above baseline seed 0, which uses all training photos. The direct comparison isolating sampling is against no_text_sample, which uses the same selection.
+- This is one balanced run. The two baseline seeds differed by 0.46 percentage points, so the measured improvement is small and does not establish reliable superiority across seeds.
+- Source: results/balanced_seed0/result.json, results/no_text_sample_seed0/result.json and experiments.csv. Training commit: 481c791.
