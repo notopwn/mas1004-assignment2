@@ -25,3 +25,12 @@ End the log with your plan for what to try next.
 - Training processed 249,984 photos in 3,906 batches of 64 and took 2,306.7 seconds on the Colab T4 GPU.
 - The run used commit a269dc1 and recipe hash 17ac485223fa. Full results are in results/baseline_seed0/result.json and experiments.csv.
 - Ran curate.py mistakes on all 12,077 validation photos and generated one sheet of 48 confident errors per city in results/curate/.
+
+### Student observations from the baseline mistake sheets
+
+> if there is hangul in the image, it is quite easy to mistake it as busan for this model.
+
+> and it also confuses cities between the same country
+
+- The student cited photos 14 and 26 on mistakes_baseline_seed0_seoul_00 as examples.
+- The sheet's CSV records photo 14 (commons_18159670.jpg) as predicted Busan with confidence 0.90, and photo 26 (commons_17824716.jpg) as predicted Busan with confidence 0.86. Both are validation photos labelled Seoul.
