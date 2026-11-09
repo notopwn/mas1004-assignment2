@@ -1,2 +1,2 @@
-python src/official.py --tag balanced --seed 0
-python src/curate.py mistakes results/balanced_seed0/model.onnx
+python src/official.py --tag wider_crop --seed 0
+python src/curate.py mistakes results/wider_crop_seed0/model.onnx
