@@ -73,7 +73,7 @@ End the log with your plan for what to try next.
 - Confusion counts relevant to the student's observation: Seoul predicted Busan, 159 to 158; Busan predicted Seoul, 442 to 478; Tokyo predicted Osaka, 431 to 546; Osaka predicted Tokyo, 831 to 838.
 - Source: the three result.json files under results/ and the imported rows in experiments.csv. All five new mistake sheets (48 validation errors per city) finished on Colab, were imported locally, and passed PNG/CSV checks.
 
-## 2026-11-10 balanced (Track A, prepared)
+## 2026-11-10 balanced (Track A, running)
 
 - Student request: "lets try giving every city equal training attention. proceed right away"
 - Changed sample_weights to give each training photo weight 1 / number of selected photos in its city. This gives each city an expected 20% share of training draws.
@@ -82,6 +82,7 @@ End the log with your plan for what to try next.
 - Student's reason: "this is just a basic idea. to give equal attention, more reasonable&rational."
 - Validation and student interpretation: pending the new run.
 - Local CPU quick check passed: 20 steps and validation on 200 photos. This is a setup check, not an official experiment result.
-- Next: train balanced with seed 0 on Colab, then compare with no_text_sample seed 0.
+- Colab pulled training commit 481c791 and confirmed seed 0 on CUDA with 44,133 selected photos and 3,906 batches of 64 (249,984 photos).
+- Next: import the completed result and mistake sheets, then compare with no_text_sample seed 0.
 
 - Verified each city has equal total sampling weight. Seed 0 planned draws (of 249,984): seoul 50153, busan 49745, tokyo 50023, osaka 49939, taipei 50124.
