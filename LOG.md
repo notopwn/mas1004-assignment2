@@ -112,11 +112,11 @@ End the log with your plan for what to try next.
 - Direct comparison: balanced seed 0, validation balanced accuracy 0.4989.
 - Student's reason: "it will help model to think in humane way, i guess. as human thinks more of a scenery instead of small details, perchance"
 - Validation balanced accuracy: 0.4840, compared with balanced seed 0 at 0.4989, a decrease of 1.49 percentage points. Training took 2,246.1 seconds (37.4 minutes).
-- Student interpretation: requested; pending their own words.
+- Student interpretation: "still not helpful, need to find something more fundamental"
 - Local CPU quick check passed (20 steps, 200 validation photos). This is a setup check, not an official experiment result.
 - Colab pulled training commit 4e6c630 and confirmed seed 0 on CUDA with 44,133 selected photos and 3,906 batches of 64 (249,984 photos).
 - Imported the completed result and all five mistake sheets (48 confident validation errors per city). Verified PNGs, CSV row counts, official training budget, accuracy from the confusion matrix, recipe hash ac3b9e487a3f and unchanged selection hash 4387ca522155.
-- Next: record the student's interpretation and let the student choose the next experiment or submission recipe.
+- Next: consider a more fundamental change and let the student choose the next experiment or submission recipe.
 
 ### Wider crop comparison (seed 0, same selection and equal city sampling)
 
