@@ -1,3 +1,2 @@
-python src/official.py --tag baseline --seed 0
-python src/official.py --tag baseline --seed 1
-python src/curate.py mistakes results/baseline_seed0/model.onnx
+python src/official.py --tag no_text_sample --seed 0
+python src/curate.py mistakes results/no_text_sample_seed0/model.onnx

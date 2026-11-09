@@ -34,3 +34,15 @@ End the log with your plan for what to try next.
 
 - The student cited photos 14 and 26 on mistakes_baseline_seed0_seoul_00 as examples.
 - The sheet's CSV records photo 14 (commons_18159670.jpg) as predicted Busan with confidence 0.90, and photo 26 (commons_17824716.jpg) as predicted Busan with confidence 0.86. Both are validation photos labelled Seoul.
+
+## 2026-11-10 no_text_sample (Track A, prepared)
+
+- Student's requested rule: "lets exclude photos which contains letters for this time"
+- Student authorized agent review and training: "do the same for other cities' images, then proceed training without them"
+- Agent visually reviewed the five existing training sample sheets (32 photos per city, 160 total), checking larger originals where needed.
+- Excluded clear writing in any language, including signs, subtitles, watermarks and text on objects. Kept uncertain cases and numbers-only images.
+- Excluded 124 sampled training photos: Seoul 21, Busan 26, Tokyo 26, Osaka 25, Taipei 26. This is not a text-free dataset: the other training photos were not reviewed.
+- Full numbered review: scripts/text_photo_review.csv. Reapply with scripts/exclude_sample_text.py. No source photos deleted; validation unchanged; starter recipe unchanged.
+- Student's earlier observation: "if there is hangul in the image, it is quite easy to mistake it as busan for this model."
+- Validation and interpretation: pending the training result and student's interpretation.
+- Next: train no_text_sample with seed 0 and compare with the baseline.
