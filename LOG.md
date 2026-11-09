@@ -35,7 +35,7 @@ End the log with your plan for what to try next.
 - The student cited photos 14 and 26 on mistakes_baseline_seed0_seoul_00 as examples.
 - The sheet's CSV records photo 14 (commons_18159670.jpg) as predicted Busan with confidence 0.90, and photo 26 (commons_17824716.jpg) as predicted Busan with confidence 0.86. Both are validation photos labelled Seoul.
 
-## 2026-11-10 no_text_sample (Track A, running)
+## 2026-11-10 no_text_sample (Track A, training completed)
 
 - Student's requested rule: "lets exclude photos which contains letters for this time"
 - Student authorized agent review and training: "do the same for other cities' images, then proceed training without them"
@@ -46,5 +46,29 @@ End the log with your plan for what to try next.
 - Student's earlier observation: "if there is hangul in the image, it is quite easy to mistake it as busan for this model."
 - Local CPU quick check passed (20 training steps and 200 validation photos). This is a setup check, not a full experiment result.
 - Colab loaded commit 989201e and started seed 0 on the T4 GPU with 44,133 selection rows and the official 249,984-photo budget (3,906 batches of 64).
-- Validation and interpretation: pending the full training result and student's interpretation.
-- Next: train no_text_sample with seed 0 and compare with the baseline.
+- Full validation balanced accuracy: 0.4938. Training took 2,130.4 seconds (35.5 minutes). Result imported from Colab and checked against the current recipe and selection hashes.
+- Student interpretation: "it was only a slightest change of training dataset, so it didnt really affected much, i think"
+- Next: review the new mistake sheets when they finish and let the student choose the next experiment.
+
+## 2026-11-10 Imported baseline seed 1 and compared the selection experiment
+
+| Run | Validation balanced accuracy | Training seconds |
+| --- | ---: | ---: |
+| baseline, seed 0 | 0.4977 | 2306.7 |
+| baseline, seed 1 | 0.4931 | 2669.3 |
+| no_text_sample, seed 0 | 0.4938 | 2130.4 |
+
+- The selection experiment is 0.39 percentage points below baseline seed 0. The two baseline seeds differ by 0.46 percentage points. These two baseline runs do not establish a statistical confidence interval.
+- This experiment excluded 124 photos from the 160-photo sample review, leaving 44,133 training photos. It did not remove all text-bearing photos from the full dataset.
+- The recipe hash is identical across all three runs (17ac485223fa); the experiment's selection hash is 4387ca522155 and its training commit is 989201e.
+
+| True city | Baseline seed 0 | no_text_sample seed 0 |
+| --- | ---: | ---: |
+| Seoul | 0.5782 | 0.5885 |
+| Busan | 0.3791 | 0.3691 |
+| Tokyo | 0.6400 | 0.6114 |
+| Osaka | 0.3454 | 0.3647 |
+| Taipei | 0.5457 | 0.5354 |
+
+- Confusion counts relevant to the student's observation: Seoul predicted Busan, 159 to 158; Busan predicted Seoul, 442 to 478; Tokyo predicted Osaka, 431 to 546; Osaka predicted Tokyo, 831 to 838.
+- Source: the three result.json files under results/ and the imported rows in experiments.csv. New mistake-sheet generation is still running on Colab.
