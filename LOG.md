@@ -172,7 +172,7 @@ End the log with your plan for what to try next.
 - Mistake-sheet generation completed successfully on all 12,077 validation photos. Verified five PNGs and their 48-row CSVs. Exported-model accuracy reconstructed from each city's printed error counts matches experiments.csv (0.5556 overall, all five per-city values). Source: results/local_logs/b_mobilenet320_mistakes.txt.
 - Next: review the Track B mistakes and let the student choose whether to submit this model or run another experiment.
 
-## 2026-11-10 b_mixup320 (Track B, running locally)
+## 2026-11-10 b_mixup320 (Track B, interrupted; no saved model)
 
 - Student request: "try mixup - try colab first & dont run locally before my confirmation".
 - Student's reason: "Test whether reducing reliance on individual cues improves generalisation. It is an established training method, but improvement here is uncertain."
@@ -188,3 +188,9 @@ End the log with your plan for what to try next.
 - Local launch wrapper exits only after train_b.py returns successfully and flushes output, avoiding the previously confirmed interpreter-finalisation hang after all artifacts and the experiment row are saved. It does not change the training procedure.
 
 - Confirmed actual training progress: epoch 1/6, batch 100/689, loss 1.603 after 94 seconds on MPS, Mixup alpha 0.2, selection hash 4387ca522155. Training source launched from b1140bb. Live output: results/local_logs/b_mixup320_run1.txt.
+
+- Student stopped the process because of battery and requested: "check wether if its done properly; do not run it again". Inspection only; no restart performed.
+- Log confirms all six training epochs completed, final training loss 0.855 at 3,454 seconds. The process then terminated with exit 137 before any validation score or export was recorded. Exact termination point within the post-training stage is not recorded.
+- No results/b_mixup320/ directory, Mixup experiment row, checkpoint or exported Mixup model exists. This trainer saves only after validation and has no periodic checkpoints, so there is no saved Mixup state to resume.
+- Confirmed no assignment training/checking process remains active. Previous submission/model.onnx is byte-identical to results/b_mobilenet320/model.onnx (SHA256 21eac52e0393aef0416b592e2700b7d2ce29d4af44accc03aecaea22df210b6b), preserving the completed 55.56% model.
+- Next: leave Mixup stopped. Any future training requires a new student request.
