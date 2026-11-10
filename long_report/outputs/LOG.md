@@ -206,3 +206,7 @@ End the log with your plan for what to try next.
 - Final Track A quick check passed on CPU: 20 steps, 1,280 presentations, validation on 200 photos. This is a release check, not an official experiment result; its score is not used to select the recipe.
 - Final Track B full ONNX check passed: "format and limits: OK" and score 0.556 on all 12,077 validation photos. Confusion counts match the prior exported-model result.
 - Preparing final releases track-a-2 (Equal city sampling) and track-b-1 (track b minor), with the exact student-selected artifacts. Personal identity stays in ignored local report files. No full training restarted.
+
+- Published and verified final releases: track-a-2, "Equal city sampling" (recipe.py and selection.csv); track-b-1, "track b minor" (model.onnx and submission.json). GitHub asset digests match the selected recipe hash, selection hash and completed model SHA256. Both releases were created November 10 before 22:00 KST.
+- Long report includes the full experiment table, exact student interpretations, the sample-review limitation, interrupted Mixup without a score, final saved-model check and this notebook. No personal leaderboard score is claimed while the nickname remains unverified.
+- Remaining student-only task: write the one-page short report independently and submit the two report PDFs on Cyber Campus. No short-report source was edited.

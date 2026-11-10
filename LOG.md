@@ -206,3 +206,11 @@ End the log with your plan for what to try next.
 - Final Track A quick check passed on CPU: 20 steps, 1,280 presentations, validation on 200 photos. This is a release check, not an official experiment result; its score is not used to select the recipe.
 - Final Track B full ONNX check passed: "format and limits: OK" and score 0.556 on all 12,077 validation photos. Confusion counts match the prior exported-model result.
 - Preparing final releases track-a-2 (Equal city sampling) and track-b-1 (track b minor), with the exact student-selected artifacts. Personal identity stays in ignored local report files. No full training restarted.
+
+- Published and verified final releases: track-a-2, "Equal city sampling" (recipe.py and selection.csv); track-b-1, "track b minor" (model.onnx and submission.json). GitHub asset digests match the selected recipe hash, selection hash and completed model SHA256. Both releases were created November 10 before 22:00 KST.
+- Long report includes the full experiment table, exact student interpretations, the sample-review limitation, interrupted Mixup without a score, final saved-model check and this notebook. No personal leaderboard score is claimed while the nickname remains unverified.
+- Remaining student-only task: write the one-page short report independently and submit the two report PDFs on Cyber Campus. No short-report source was edited.
+
+- Completed 12-page long-report PDF; rendered and visually reviewed all pages, checked identity glyphs, removed template placeholders, verified the six completed experiment scores and corrected the only overflowing source-path line. Final deliverable is output/pdf/MAS1004_Assignment2_Long_Report.pdf (local, ignored).
+- Uploaded the final PDF to MAS1004 Assignment 2 on Cyber Campus. The assignment page visibly confirmed "정상제출" on November 10 at 13:47 KST and listed MAS1004_Assignment2_Long_Report.pdf (88.1 KB). Only the long report was attached; the student-only short report is still missing. The report appendix is the notebook snapshot immediately before this upload.
+- Final outstanding requirement: the student must independently write the one-page short report, export it as PDF and add it to the same assignment before November 10, 22:00 KST. No full training restarted.
