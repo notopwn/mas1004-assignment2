@@ -17,6 +17,7 @@ anything. Every run adds a row to experiments.csv.
 
 import argparse
 import csv
+import hashlib
 import json
 import os
 import shutil
@@ -102,12 +103,29 @@ def shown(folder):
     return path.relative_to(ROOT).as_posix() if path.is_relative_to(ROOT) else str(folder)
 
 
+def select_rows(rows, selection):
+    """Keep the named training photos, including repeated paths if requested."""
+    available = {f"{city}/{path.name}": (path, city) for path, city in rows}
+    with Path(selection).open(newline="", encoding="utf-8-sig") as source:
+        reader = csv.DictReader(source)
+        if reader.fieldnames != ["path"]:
+            raise ValueError("selection must have exactly one column named path")
+        paths = [(row["path"] or "").strip().replace("\\", "/") for row in reader]
+    if not paths:
+        raise ValueError("selection has no photos")
+    unknown = [path for path in paths if path not in available]
+    if unknown:
+        raise ValueError(f"selection contains unavailable training paths: {unknown[:5]}")
+    return [available[path] for path in paths]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tag", required=True)
     ap.add_argument("--model", choices=sorted(MODELS), default="resnet18")
     ap.add_argument("--size", type=int, default=224)
     ap.add_argument("--folders", nargs="+", default=[str(ROOT / "data" / "starter" / "train")])
+    ap.add_argument("--selection", help="optional path-column CSV for starter training photos")
     ap.add_argument("--epochs", type=int, default=4)
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--batch-size", type=int, default=64)
@@ -127,7 +145,17 @@ def main():
         for d in sorted(folder.iterdir()):
             if d.is_dir() and d.name.lower() not in CITIES:
                 print(f"{d} is not one of the five cities ({', '.join(CITIES)}); its photos are not used")
+    selection_sha = ""
+    if args.selection:
+        starter = ROOT / "data" / "starter" / "train"
+        if len(args.folders) != 1 or Path(args.folders[0]).absolute() != starter:
+            ap.error("--selection requires the default starter training folder")
+        rows = select_rows(rows, args.selection)
+        selection_sha = hashlib.sha256(Path(args.selection).read_bytes()).hexdigest()[:12]
+        print(f"training selection: {shown(args.selection)} ({selection_sha})", flush=True)
     counts = {c: sum(1 for _, x in rows if x == c) for c in CITIES}
+    if any(count == 0 for count in counts.values()):
+        ap.error("training needs at least one photo in every city")
     print(f"{len(rows)} photos ({', '.join(f'{c} {n}' for c, n in counts.items())}) on {device}")
 
     tf = T.Compose([T.RandomResizedCrop(args.size, scale=(0.35, 1.0)), T.RandomHorizontalFlip(),
@@ -150,7 +178,7 @@ def main():
     for epoch in range(args.epochs):
         net.train()
         losses = []
-        for x, y in loader:
+        for step, (x, y) in enumerate(loader, start=1):
             x, y = x.to(device), y.to(device)
             with torch.autocast(device.type, dtype=torch.float16, enabled=device.type == "cuda"):
                 loss = nn.functional.cross_entropy(net(x), y, label_smoothing=0.1)
@@ -160,6 +188,9 @@ def main():
             scaler.update()
             sched.step()
             losses.append(loss.item())
+            if step % 100 == 0:
+                print(f"epoch {epoch + 1}/{args.epochs}, step {step}/{len(loader)}: "
+                      f"loss {np.mean(losses[-100:]):.3f} ({time.time() - start:.0f}s)", flush=True)
         print(f"epoch {epoch + 1}/{args.epochs}: loss {np.mean(losses):.3f} ({time.time() - start:.0f}s)", flush=True)
     train_seconds = time.time() - start
 
@@ -171,6 +202,8 @@ def main():
     export_onnx(net, out / "model.onnx", args.size)
     info = {"image_size": args.size, "starting_weights": weights_name,
             "data": " + ".join(shown(f) for f in args.folders), "summary": f"{args.model} at {args.size}, {args.epochs} epochs"}
+    if args.selection:
+        info.update(selection=shown(args.selection), selection_sha=selection_sha)
     (out / "submission.json").write_text(json.dumps(info, indent=2))
     m = rules.measure_onnx(out / "model.onnx", args.size)
     print(f"wrote {out / 'model.onnx'}: {m['parameters'] / 1e6:.2f} million parameters, {m['gmacs']:.2f} billion multiply-adds")
@@ -192,6 +225,7 @@ def main():
                     "budget": args.epochs * len(loader) * args.batch_size, "val_score": round(score, 4),
                     **{c: round(per_city.get(c, 0), 4) for c in CITIES}, "train_seconds": round(train_seconds, 1),
                     "device": str(device), "selection": f"{args.model} {args.size}px; " + " + ".join(shown(f) for f in args.folders),
+                    "selection_sha": selection_sha,
                     "commit": git_commit()})
 
 

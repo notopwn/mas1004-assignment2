@@ -131,3 +131,17 @@ End the log with your plan for what to try next.
 - Of the completed local validation results, balanced seed 0 remains highest at 0.4989. The current working recipe is still wider_crop; no unrequested recipe rollback was made.
 - One run per changed recipe does not prove a general conclusion about scenery. This result measures the effect of this particular crop-range change with the other current settings.
 - Source: results/wider_crop_seed0/result.json, results/balanced_seed0/result.json and experiments.csv. Training commit: 4e6c630.
+
+## 2026-11-10 b_mobilenet320 (Track B, prepared)
+
+- Student request: "yes let's start Track B", approving MobileNetV3-Large at 320 x 320 with pretrained weights.
+- Student's stated motivation: "still not helpful, need to find something more fundamental".
+- First Track B configuration: torchvision MobileNetV3-Large IMAGENET1K_V2, 320 x 320, 6 epochs, batch size 64, equal city sampling, AdamW learning rate 0.0003, and the starter Track B augmentation (crop area 35–100%, horizontal flips, colour jitter).
+- Added an optional --selection argument to train_b.py to carry over the student's 44,133 selected training photos and preserve the 124 exclusions. No validation photos used for training. Track A recipe unchanged.
+- This starts a different track with a different model, resolution and training schedule; it is not an isolated test of architecture against Track A.
+- Queue: train and copy model plus metadata into submission/, check format and limits without repeating validation, then generate mistake sheets at 320 pixels.
+- Validation and student interpretation: pending the run.
+- Setup checks passed: selected 44,133 photos, preserved every exclusion, rejected unavailable paths, ran forward/backward, exported ONNX, and measured 4,196,243 parameters / 0.4365664 billion multiply-adds.
+- Colab refused a GPU because its usage limit was reached. The Mac MPS fallback passed eight batch-64 training steps at 320 pixels; steps after initial compilation took about 0.86 seconds each on synthetic inputs. This is a short benchmark, not a full-run timing guarantee.
+- Starting the same six-epoch model locally on MPS with four data-loader workers; progress printed every 100 batches. Runtime logs go in results/local_logs/.
+- Next: complete local training, validate submission format and limits, then generate mistake sheets.
