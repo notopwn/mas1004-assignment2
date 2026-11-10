@@ -130,11 +130,15 @@ def main():
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--batch-size", type=int, default=64)
     ap.add_argument("--balance", action="store_true", help="draw every city equally often")
+    ap.add_argument("--mixup-alpha", type=float, default=0.0,
+                    help="symmetric Beta distribution strength; 0 disables Mixup")
     ap.add_argument("--workers", type=int, default=min(8, os.cpu_count() or 2))
     ap.add_argument("--submit", action="store_true", help="also copy the model into submission/")
     ap.add_argument("--val-every", type=int, default=1,
                     help="measure on every n-th validation photo only (quicker without a GPU)")
     args = ap.parse_args()
+    if not np.isfinite(args.mixup_alpha) or args.mixup_alpha < 0:
+        ap.error("--mixup-alpha must be finite and non-negative")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
     rows = [r for folder in args.folders for r in rules.list_photos(folder)]
@@ -174,14 +178,25 @@ def main():
     opt = torch.optim.AdamW(net.parameters(), lr=args.lr, weight_decay=0.05)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=args.lr, total_steps=args.epochs * len(loader), pct_start=0.15)
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
+    print(f"Mixup alpha: {args.mixup_alpha}", flush=True)
     start = time.time()
     for epoch in range(args.epochs):
         net.train()
         losses = []
         for step, (x, y) in enumerate(loader, start=1):
             x, y = x.to(device), y.to(device)
+            if args.mixup_alpha > 0:
+                lam = float(np.random.beta(args.mixup_alpha, args.mixup_alpha))
+                order = torch.randperm(x.size(0), device=device)
+                x = lam * x + (1.0 - lam) * x[order]
             with torch.autocast(device.type, dtype=torch.float16, enabled=device.type == "cuda"):
-                loss = nn.functional.cross_entropy(net(x), y, label_smoothing=0.1)
+                logits = net(x)
+                if args.mixup_alpha > 0:
+                    loss = (lam * nn.functional.cross_entropy(logits, y, label_smoothing=0.1)
+                            + (1.0 - lam) * nn.functional.cross_entropy(
+                                logits, y[order], label_smoothing=0.1))
+                else:
+                    loss = nn.functional.cross_entropy(logits, y, label_smoothing=0.1)
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.step(opt)
@@ -202,6 +217,9 @@ def main():
     export_onnx(net, out / "model.onnx", args.size)
     info = {"image_size": args.size, "starting_weights": weights_name,
             "data": " + ".join(shown(f) for f in args.folders), "summary": f"{args.model} at {args.size}, {args.epochs} epochs"}
+    if args.mixup_alpha > 0:
+        info["mixup_alpha"] = args.mixup_alpha
+        info["summary"] += f", Mixup alpha={args.mixup_alpha}"
     if args.selection:
         info.update(selection=shown(args.selection), selection_sha=selection_sha)
     (out / "submission.json").write_text(json.dumps(info, indent=2))

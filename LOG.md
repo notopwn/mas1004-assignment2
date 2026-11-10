@@ -171,3 +171,13 @@ End the log with your plan for what to try next.
 
 - Mistake-sheet generation completed successfully on all 12,077 validation photos. Verified five PNGs and their 48-row CSVs. Exported-model accuracy reconstructed from each city's printed error counts matches experiments.csv (0.5556 overall, all five per-city values). Source: results/local_logs/b_mobilenet320_mistakes.txt.
 - Next: review the Track B mistakes and let the student choose whether to submit this model or run another experiment.
+
+## 2026-11-10 b_mixup320 (Track B, prepared for Colab)
+
+- Student request: "try mixup - try colab first & dont run locally before my confirmation".
+- Student's reason: "Test whether reducing reliance on individual cues improves generalisation. It is an established training method, but improvement here is uncertain."
+- Add optional Mixup with alpha 0.2: draw a batch-level mixing coefficient from Beta(0.2, 0.2), blend a randomly paired batch, and weight the two label-smoothed cross-entropy losses by the same coefficient. Validation photos are not mixed.
+- Keep the MobileNetV3-Large IMAGENET1K_V2 starting weights, image size 320, six epochs, batch size 64, equal city sampling, selection hash 4387ca522155, optimiser, schedule and other augmentations unchanged. Train from the pretrained starting weights, not the prior trained model.
+- Direct comparison: b_mobilenet320, validation balanced accuracy 0.5556. Neither run fixes a seed; Colab CUDA versus the previous MPS run also introduces a device difference, so any score difference cannot be attributed exclusively to Mixup.
+- Static syntax check passed without importing the training module or starting a local model. No local training is authorised without further student confirmation.
+- Next: try the Colab GPU. If unavailable, stop and report; no automatic local fallback. Score and interpretation pending.
