@@ -132,7 +132,7 @@ End the log with your plan for what to try next.
 - One run per changed recipe does not prove a general conclusion about scenery. This result measures the effect of this particular crop-range change with the other current settings.
 - Source: results/wider_crop_seed0/result.json, results/balanced_seed0/result.json and experiments.csv. Training commit: 4e6c630.
 
-## 2026-11-10 b_mobilenet320 (Track B, prepared)
+## 2026-11-10 b_mobilenet320 (Track B, running locally)
 
 - Student request: "yes let's start Track B", approving MobileNetV3-Large at 320 x 320 with pretrained weights.
 - Student's stated motivation: "still not helpful, need to find something more fundamental".
@@ -145,3 +145,5 @@ End the log with your plan for what to try next.
 - Colab refused a GPU because its usage limit was reached. The Mac MPS fallback passed eight batch-64 training steps at 320 pixels; steps after initial compilation took about 0.86 seconds each on synthetic inputs. This is a short benchmark, not a full-run timing guarantee.
 - Starting the same six-epoch model locally on MPS with four data-loader workers; progress printed every 100 batches. Runtime logs go in results/local_logs/.
 - Next: complete local training, validate submission format and limits, then generate mistake sheets.
+
+- Confirmed the actual local run on MPS loaded selection hash 4387ca522155 and reached epoch 1/6, batch 100/689, loss 1.597 after 106 seconds. Training was launched from commit 44d0449. Planned total: 4,134 batches, 264,576 training presentations.
