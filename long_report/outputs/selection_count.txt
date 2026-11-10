@@ -1,0 +1,8 @@
+city      selected     of   by source
+seoul        11253  11274   commons 6760, osv5m 319, youtube 4174
+busan         5165   5191   commons 3471, youtube 1694
+tokyo        13321  13347   commons 6960, osv5m 1914, youtube 4447
+osaka         7175   7200   commons 5329, osv5m 339, youtube 1507
+taipei        7219   7245   commons 5647, osv5m 531, youtube 1041
+total 44133 rows
+dropped: 124 contains letters

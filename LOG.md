@@ -194,3 +194,15 @@ End the log with your plan for what to try next.
 - No results/b_mixup320/ directory, Mixup experiment row, checkpoint or exported Mixup model exists. This trainer saves only after validation and has no periodic checkpoints, so there is no saved Mixup state to resume.
 - Confirmed no assignment training/checking process remains active. Previous submission/model.onnx is byte-identical to results/b_mobilenet320/model.onnx (SHA256 21eac52e0393aef0416b592e2700b7d2ce29d4af44accc03aecaea22df210b6b), preserving the completed 55.56% model.
 - Next: leave Mixup stopped. Any future training requires a new student request.
+
+## 2026-11-10 Final submission preparation
+
+- Student selected "Equal city sampling (49.89%)" for Track A. Restored exactly the balanced recipe from 481c791 (recipe hash 7eb0f0acc97f), retaining selection hash 4387ca522155. This reuses the completed measured recipe, not a new experiment.
+- Track A release title supplied by student: "Equal city sampling". Track B title: "track b minor". Track B uses the completed b_mobilenet320 model, not the interrupted Mixup run.
+- Student's plan with one more week: "i want to try implementing geo-sleuth type of method." No implementation or result is claimed for this future idea.
+- Student confirmed the independent short report has not been written. The agent will not write or edit it. Leaderboard nickname remains unverified.
+- Run only the required Track A 20-step release check and Track B saved-model validation; no full training or Mixup restart.
+
+- Final Track A quick check passed on CPU: 20 steps, 1,280 presentations, validation on 200 photos. This is a release check, not an official experiment result; its score is not used to select the recipe.
+- Final Track B full ONNX check passed: "format and limits: OK" and score 0.556 on all 12,077 validation photos. Confusion counts match the prior exported-model result.
+- Preparing final releases track-a-2 (Equal city sampling) and track-b-1 (track b minor), with the exact student-selected artifacts. Personal identity stays in ignored local report files. No full training restarted.

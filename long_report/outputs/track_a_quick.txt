@@ -1,0 +1,17 @@
+Track A, seed 0, on cpu: selection.csv, 44133 rows (seoul 11253, busan 5165, tokyo 13321, osaka 7175, taipei 7219)
+20 steps of 64 photos = 1,280 photos through the network
+  step     2/20  loss 1.780  (14s)
+  step     4/20  loss 1.647  (27s)
+  step     6/20  loss 1.631  (39s)
+  step     8/20  loss 1.631  (52s)
+  step    10/20  loss 1.630  (65s)
+  step    12/20  loss 1.536  (78s)
+  step    14/20  loss 1.485  (88s)
+  step    16/20  loss 1.545  (97s)
+  step    18/20  loss 1.522  (106s)
+  step    20/20  loss 1.509  (115s)
+
+validation score 0.289  (seoul 0.171, busan 0.348, tokyo 0.323, osaka 0.314, taipei 0.289)
+training took 1.9 min; wrote /Users/notopwn/Desktop/notopwn/School/2026/SGU/2e/Lectures/Data&AI/2eAS/mas1004-assignment2/results/final_release_check_seed0/model.onnx
+This was not an official run (--quick or a different --budget). The grader's numbers will differ.
+A full run on this computer (cpu) would take about 382 minutes: 375 for training and 7 for the validation photos.

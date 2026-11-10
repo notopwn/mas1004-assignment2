@@ -1,0 +1,12 @@
+/Users/notopwn/Desktop/notopwn/School/2026/SGU/2e/Lectures/Data&AI/2eAS/mas1004-assignment2/submission/model.onnx: 16.8 MB, 4.20 million parameters, 0.44 billion multiply-adds per 320 x 320 photo
+  limits: 12 million parameters, 2.0 billion multiply-adds
+  format and limits: OK
+
+/Users/notopwn/Desktop/notopwn/School/2026/SGU/2e/Lectures/Data&AI/2eAS/mas1004-assignment2/data/starter/val: score 0.556 on 12077 photos (135s)
+  seoul 0.576, busan 0.478, tokyo 0.612, osaka 0.478, taipei 0.633
+  confusion (rows: true city, columns: answer):
+    seoul    1403   237   315   172   308
+    busan     402   665   135    77   111
+    tokyo     429    96  2374   677   305
+    osaka     195    72   675  1018   168
+    taipei    327    69   262   165  1420

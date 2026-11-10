@@ -1,90 +1,136 @@
-% MAS1004 Assignment 2: long report.
-%
-% You fill this in with your agent, in your repository. AGENTS.md tells the
-% agent how. Red text in the PDF is what still has to be replaced.
-%
-% - Pictures go in figures/. Copy them from results/, which is not in git.
-% - Outputs go in outputs/: copy experiments.csv, LOG.md and the outputs of
-%   check_submission.py and curate.py count here. \outputfile{outputs/...}
-%   prints a file exactly as it is. Every number in this report has to come
-%   from such an output.
-%
-% To make the PDF: compress this folder into a zip, and on Overleaf choose
-% New Project, Upload Project. Set Menu, Compiler to XeLaTeX, and Recompile.
-
 \documentclass[11pt]{article}
 \usepackage{mas1004}
-
 \reporttitle{Assignment 2: Long report}
-\studentname{Your name}
-\studentid{Your student ID}
-
+\IfFileExists{identity.tex}{\input{identity.tex}}{\studentname{Identity supplied in local LMS copy}\studentid{Not published}}
 \begin{document}
 \makeheader
+\textbf{Repository:} \url{https://github.com/notopwn/mas1004-assignment2}\\
+\textbf{Final releases:} \texttt{track-a-2}, Equal city sampling; \texttt{track-b-1}, track b minor.\\
+\textbf{Leaderboard nickname:} not recalled. Registration was reported as submitted; no nickname or personal leaderboard score is inferred.
 
-\fillin{Your leaderboard nickname, and the tags of your last Track A and Track B releases.}
+\section*{What the experiments show}
+The strongest completed validation result was Track B MobileNetV3-Large at 320 pixels: 55.56\% balanced accuracy. The chosen Track A recipe scored 49.89\%, compared with 49.77\% and 49.31\% for the two baseline seeds. The small Track A differences are comparable to the observed baseline seed variation and do not establish reliable superiority across seeds. The Track B gain changes several settings together, so it does not isolate an architectural effect.
 
-% The sections below are a suggestion. Change, merge or add sections as you
-% like; README.md, "The long report", says what a reader should be able to see.
+This long report was written with an agent from \texttt{experiments.csv}, saved program output and the student's exact requests and interpretations in \texttt{LOG.md}. The interrupted Mixup run has no validation result and is not the submitted model. The independent short report is a separate student-only task.
 
-% ---------------------------------------------------------------------------
-\section*{Track A}
+\section*{Task, data and measurement}
+The classifier predicts Seoul, Busan, Tokyo, Osaka or Taipei. Starter data contains 44,257 training photos and 12,077 validation photos. Balanced accuracy averages the five per-city accuracies, giving each city equal importance despite different city counts. Validation photos were never included in training or removed in response to errors.
 
-\begin{center}\footnotesize
-\begin{tabular}{lp{0.6\linewidth}r}
-\toprule
-tag & what changed from the run before & validation \\
-\midrule
-\multicolumn{3}{l}{\fillin{one row per recipe, with the numbers from experiments.csv}} \\
+Track A fixes ResNet18, 224-pixel inputs and a nominal 250,000-photo budget. At batch size 64, it runs 3,906 steps, or 249,984 training presentations. Baselines use seeds 0 and 1; changed recipes were measured once with seed 0. Track B ran locally on MPS after Colab's GPU quota became unavailable. No extra photos were collected. Starting weights came from torchvision's ImageNet models.
+
+\section*{Completed experiments}
+\begin{center}\scriptsize
+\begin{tabular}{lllrl}
+\toprule Track & Tag & Seed & Accuracy (\%) & Change \\ \midrule
+A & baseline & 0 & 49.77 & Starter recipe, all photos \\
+A & baseline & 1 & 49.31 & Same baseline, new seed \\
+A & no\_text\_sample & 0 & 49.38 & Exclude 124 sampled photos with writing \\
+A & balanced & 0 & 49.89 & Equal city sampling \\
+A & wider\_crop & 0 & 48.40 & Crop area 70--100 percent \\
+B & b\_mobilenet320 & -- & 55.56 & MobileNetV3-Large at 320 pixels \\
+\bottomrule
+\end{tabular}
+\end{center}
+All accuracies are starter-validation measurements. Exact logged values, budgets, devices and hashes are in the appendices. Track B does not explicitly fix a seed; its blank seed field is not seed 0. The interrupted Mixup run is excluded from this completed-run table.
+
+\section*{Track A: observations, requests and measurements}
+\subsection*{Baseline}
+The two baseline seeds scored 49.77\% and 49.31\%, a 0.46 percentage-point difference. Two seeds show variability but do not establish a statistical confidence interval. From the baseline mistakes, the student observed:
+\begin{quote}
+``if there is hangul in the image, it is quite easy to mistake it as busan for this model.''\\
+``and it also confuses cities between the same country''
+\end{quote}
+The cited examples were numbers 14 and 26 in the baseline Seoul mistake sheet, predicted as Busan with recorded confidence 0.90 and 0.86. They demonstrate errors, not proof that Hangul caused them. The student had also suggested weather, skyline and buildings as potential outdoor-city clues. That remained a hypothesis rather than a demonstrated decision rule.
+
+\subsection*{Exclude a sampled set of photos containing writing}
+The student requested ``lets exclude photos which contains letters for this time'', then explicitly authorised agent review: ``do the same for other cities' images, then proceed training without them''. The agent performed this requested review; the report does not represent the student as having personally classified every photo.
+
+The five sampled training sheets contained 160 photos, 32 per city. Clear writing in any language, including signs, subtitles, watermarks and text on objects, was excluded. Uncertain cases and numbers-only images were kept. There were 124 exclusions: Seoul 21, Busan 26, Tokyo 26, Osaka 25 and Taipei 26. This left 44,133 training photos. The full numbered decisions are in \texttt{scripts/text\_photo\_review.csv}; \texttt{scripts/exclude\_sample\_text.py} reproduces the selection. No source photo was deleted and validation was unchanged.
+
+This was \emph{sample-based removal}, not a text-free dataset. Most training images were not reviewed for writing. With the same recipe and seed 0, accuracy fell from 49.77\% to 49.38\%, or 0.39 percentage points. The student's interpretation was:
+\begin{quote}
+``it was only a slightest change of training dataset, so it didnt really affected much, i think''
+\end{quote}
+The narrow coverage and small score change do not establish whether writing generally helps or harms classification.
+
+\subsection*{Equal city sampling}
+The request was ``lets try giving every city equal training attention. proceed right away''. Each photo was weighted by the inverse of the selected-photo count for its city. This gives each city equal expected total sampling weight; batches need not contain exact equal counts. The photo selection and all other settings stayed unchanged.
+
+The student's reason was ``this is just a basic idea. to give equal attention, more reasonable\&rational.'' Accuracy rose from 49.38\% to 49.89\%, or 0.51 percentage points. This comparison isolates sampling. Comparison with the all-photo baseline also changes photo selection. The student concluded:
+\begin{quote}
+``still not an meaningful improvement, should find better way''
+\end{quote}
+Busan, Osaka and Taipei improved while Seoul and Tokyo declined. The advantage over baseline seed 0 was only 0.12 percentage points. The student selected this recipe for the final release because it had the highest measured Track A accuracy among the completed experiments.
+
+\subsection*{Larger scene crops}
+The student approved changing crop area from 35--100\% to 70--100\%, keeping the other balanced settings. The reason was:
+\begin{quote}
+``it will help model to think in humane way, i guess. as human thinks more of a scenery instead of small details, perchance''
+\end{quote}
+Accuracy fell from 49.89\% to 48.40\%, or 1.49 percentage points. Seoul and Tokyo rose slightly while the other three cities declined. The student's interpretation was ``still not helpful, need to find something more fundamental''. This tests one crop-range change, not the usefulness of scene context in general. The final Track A release restores the previously measured balanced recipe, including the 35--100\% crop range.
+
+\section*{Track B: completed MobileNet model}
+The student approved MobileNetV3-Large with torchvision \texttt{IMAGENET1K\_V2} starting weights and 320-pixel inputs. It trained six epochs with batch size 64, equal city sampling and the same 44,133-photo selection. Augmentation used crop area 35--100\%, horizontal flips and colour jitter. AdamW used learning rate 0.0003 and weight decay 0.05, with OneCycleLR and label smoothing 0.1.
+
+The local MPS run completed 4,134 batches and 264,576 presentations in 3,334.6 seconds of training. Validation accuracy was 55.56\%, a 5.67 percentage-point increase over the chosen Track A recipe. The student's interpretation was:
+\begin{quote}
+``reasonably better result,,, changing most of the model \& environment could be helpful than fine-tuning bad model''
+\end{quote}
+This is the student's interpretation. Model, initial weights, resolution, schedule, augmentation and training budget differ, so the measurements cannot isolate the helpful change or establish that the earlier architecture was intrinsically inadequate.
+
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule True city & Track A balanced (\%) & Wider crop (\%) & Track B (\%) \\ \midrule
+Seoul & 48.75 & 49.40 & 57.62 \\
+Busan & 44.53 & 41.37 & 47.84 \\
+Tokyo & 50.71 & 51.84 & 61.17 \\
+Osaka & 45.39 & 41.35 & 47.84 \\
+Taipei & 60.05 & 58.05 & 63.31 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\fillin{What you tried, why, and what you think each result means.}
+\subsection*{Submission checks}
+The exported model has 4,196,243 parameters, approximately 0.4365664 billion multiply-adds per 320-pixel image, and a 16.8 MB file. It passes the unchanged checker; limits are 12 million parameters and 2.0 billion multiply-adds. Metadata records the size, weights and selection hash \texttt{4387ca522155}. Full final ONNX validation output is reproduced in Appendix A. The submitted model is the completed \texttt{b\_mobilenet320} export.
 
-\fillin{Your final recipe and selection, and their leaderboard score next to
-their validation score.}
+\subsection*{Mixup: interrupted, no measured result}
+The student chose Mixup to test whether reducing reliance on individual cues improves generalisation. An alpha of 0.2 was prepared with the other MobileNet320 settings unchanged. Colab refused a GPU because of usage limits; the student subsequently approved local training.
 
-% ---------------------------------------------------------------------------
-\section*{Decisions you made from photos}
+All six training epochs completed. The final printed training loss was 0.855 after 3,454 seconds, but the student stopped the process because of battery. It exited with code 137 before recording validation or exporting a model. The exact interruption point within that post-training stage was not recorded. No checkpoint existed because saving occurred only after validation. There is no Mixup validation score or completed experiment row, so no claim about its accuracy can be made. No restart was performed after the student's stop request. The previous completed Track B model was preserved.
 
-\picturefile{figures/mistakes_baseline_seed0_busan_00.png}
+\section*{Mistakes and limits of generalisation}
+The Track B mistake sheets contain the 48 most confident errors per city, not random samples. Within them, 42 of Busan's 48 errors were predicted as Seoul and 38 of Osaka's 48 as Tokyo. This is consistent with the student's same-country observation, but those counts are not full-validation confusion rates. Some images have few location-specific clues, and repeated views can overrepresent one scene.
 
-\fillin{What you looked at, what you saw in common, and the rule you wrote
-before acting.}
+The leaderboard uses unseen YouTube channels; the final set uses unseen phone street photos. Differences in source, framing and scene composition may change performance. Public validation accuracy therefore must not be presented as a leaderboard result. The retrieved leaderboard snapshot was updated November 9 at 02:41 KST, before these final releases. The nickname was not recalled, so no leaderboard row was assigned to this repository without evidence. Final personal leaderboard scores were unavailable at report preparation and are explicitly left unreported rather than replaced by validation scores.
 
-\fillin{What you changed (the output of curate.py count, or the photos you
-added), and the scores before and after.}
+\section*{What helped and future work}
+Equal sampling had the best completed Track A accuracy, but its measured margin over the baseline was small. Wider crops had the largest decline against their immediate predecessor, 1.49 percentage points. Sampled text exclusion did not improve the measured score. Track B produced the largest completed improvement, with multiple changes preventing a causal attribution.
 
-\fillin{The requests you gave your agent for these decisions.}
+With one more week, the student said:
+\begin{quote}
+``i want to try implementing geo-sleuth type of method.''
+\end{quote}
+This is a future direction, not an implemented or measured method. A workflow lesson from the interruption is to save model and optimiser checkpoints before validation in future experiments. This suggestion does not recover the lost Mixup weights.
 
-% ---------------------------------------------------------------------------
-\section*{Track B}
+\section*{Final release record}
+Track A: \url{https://github.com/notopwn/mas1004-assignment2/releases/tag/track-a-2}\\
+Track B: \url{https://github.com/notopwn/mas1004-assignment2/releases/tag/track-b-1}\\
+The class-only starter-photo link and source photos are not included in this public repository. The final checks and raw experiment records follow.
 
-\fillin{What you tried, one step at a time, and the validation score after
-each step.}
-
-\fillin{How you collected any extra photos.}
-
-\fillin{Your validation score next to your leaderboard score, and why they
-might disagree.}
-
-\subsection*{Your submission, as the grader sees it}
+\clearpage
+\section*{Appendix A: Final saved-model validation}
 \outputfile{outputs/check_submission.txt}
-
-% ---------------------------------------------------------------------------
-\section*{What made the difference}
-
-\fillin{Which change helped most and which least, in both tracks, with your
-numbers.}
-
-\fillin{What you would do next with one more week.}
-
-% ---------------------------------------------------------------------------
-\section*{All runs}
+\section*{Appendix B: Track A release check}
+This is a 20-step recipe check, not another official experiment. Its small-sample accuracy is not used in the comparison table.
+\outputfile{outputs/track_a_quick.txt}
+\section*{Appendix C: Selected training counts}
+\outputfile{outputs/selection_count.txt}
+\section*{Appendix D: Completed experiment records}
 \outputfile{outputs/experiments.csv}
-
-\section*{Lab notebook}
+\section*{Appendix E: Submitted model metadata}
+\outputfile{outputs/submission.json}
+\clearpage
+\section*{Appendix F: Lab notebook}
+The notebook is reproduced verbatim. Earlier entries describe historical states; later entries record final choices and interruption status.
 \outputfile{outputs/LOG.md}
-
 \end{document}

@@ -4,3 +4,11 @@ __pycache__/
 .venv/
 # Track B models go into GitHub releases, not into the history
 submission/*.onnx
+
+# Personal report identity and LMS deliverables stay local
+long_report/identity.tex
+long_report/long_report.pdf
+long_report/long_report.log
+long_report/long_report.aux
+long_report/long_report.out
+output/
