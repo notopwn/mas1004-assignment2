@@ -181,3 +181,5 @@ End the log with your plan for what to try next.
 - Direct comparison: b_mobilenet320, validation balanced accuracy 0.5556. Neither run fixes a seed; Colab CUDA versus the previous MPS run also introduces a device difference, so any score difference cannot be attributed exclusively to Mixup.
 - Static syntax check passed without importing the training module or starting a local model. No local training is authorised without further student confirmation.
 - Next: try the Colab GPU. If unavailable, stop and report; no automatic local fallback. Score and interpretation pending.
+
+- Tried reconnecting to the Colab T4 GPU after pushing 8fdbec9. Colab displayed "GPU 백엔드에 연결할 수 없음" and explicitly cited current usage limits. No GPU session or Mixup training was started. Did not select "Connect without GPU". The experiment remains queued; awaiting the student's decision before any local training.
