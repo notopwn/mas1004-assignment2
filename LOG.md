@@ -132,7 +132,7 @@ End the log with your plan for what to try next.
 - One run per changed recipe does not prove a general conclusion about scenery. This result measures the effect of this particular crop-range change with the other current settings.
 - Source: results/wider_crop_seed0/result.json, results/balanced_seed0/result.json and experiments.csv. Training commit: 4e6c630.
 
-## 2026-11-10 b_mobilenet320 (Track B, running locally)
+## 2026-11-10 b_mobilenet320 (Track B, completed)
 
 - Student request: "yes let's start Track B", approving MobileNetV3-Large at 320 x 320 with pretrained weights.
 - Student's stated motivation: "still not helpful, need to find something more fundamental".
@@ -140,10 +140,34 @@ End the log with your plan for what to try next.
 - Added an optional --selection argument to train_b.py to carry over the student's 44,133 selected training photos and preserve the 124 exclusions. No validation photos used for training. Track A recipe unchanged.
 - This starts a different track with a different model, resolution and training schedule; it is not an isolated test of architecture against Track A.
 - Queue: train and copy model plus metadata into submission/, check format and limits without repeating validation, then generate mistake sheets at 320 pixels.
-- Validation and student interpretation: pending the run.
+- Validation balanced accuracy: 0.5556.
+- Student interpretation: "reasonably better result,,, changing most of the model & environment could be helpful than fine-tuning bad model"
 - Setup checks passed: selected 44,133 photos, preserved every exclusion, rejected unavailable paths, ran forward/backward, exported ONNX, and measured 4,196,243 parameters / 0.4365664 billion multiply-adds.
 - Colab refused a GPU because its usage limit was reached. The Mac MPS fallback passed eight batch-64 training steps at 320 pixels; steps after initial compilation took about 0.86 seconds each on synthetic inputs. This is a short benchmark, not a full-run timing guarantee.
 - Starting the same six-epoch model locally on MPS with four data-loader workers; progress printed every 100 batches. Runtime logs go in results/local_logs/.
-- Next: complete local training, validate submission format and limits, then generate mistake sheets.
+- Follow-up completed: validated the exported model and generated all five mistake sheets.
 
 - Confirmed the actual local run on MPS loaded selection hash 4387ca522155 and reached epoch 1/6, batch 100/689, loss 1.597 after 106 seconds. Training was launched from commit 44d0449. Planned total: 4,134 batches, 264,576 training presentations.
+
+### Completed Track B result
+
+- Finished all six epochs locally on MPS: 4,134 batches and 264,576 training presentations, in 3,334.6 seconds (55.6 minutes).
+- Validation balanced accuracy: 0.5556, compared with best measured Track A (balanced seed 0) at 0.4989: +5.67 percentage points. Compared with the latest wider_crop result, +7.16 percentage points.
+- These runs change architecture, starting weights, resolution, augmentation and training schedule together. The result does not isolate which change produced the gain; a single run also does not measure run-to-run uncertainty.
+- The Track B starter does not set a random seed; the experiment row correctly leaves seed blank.
+
+| True city | Best Track A (balanced) | Track B MobileNet320 | Change, percentage points |
+| --- | ---: | ---: | ---: |
+| Seoul | 0.4875 | 0.5762 | +8.87 |
+| Busan | 0.4453 | 0.4784 | +3.31 |
+| Tokyo | 0.5071 | 0.6117 | +10.46 |
+| Osaka | 0.4539 | 0.4784 | +2.45 |
+| Taipei | 0.6005 | 0.6331 | +3.26 |
+
+- Saved matching model and metadata to results/b_mobilenet320/ and submission/. Metadata records IMAGENET1K_V2, image size 320 and selection hash 4387ca522155.
+- The final exported model passed the unchanged check_submission.py --no-val: "format and limits: OK"; 16.8 MB, 4.20 million parameters and 0.44 billion multiply-adds (limits: 12 million and 2.0 billion).
+- Training, validation, export and the experiments.csv write completed, but Python then hung during interpreter shutdown waiting for its multiprocessing bookkeeping helper (confirmed by a process sample). Stopped only that finished process and helper; exit 143 reflects this cleanup, not interrupted training. Ran the final format check independently and started mistake sheets separately from the saved model.
+- Sources: experiments.csv and results/local_logs/b_mobilenet320_run1.txt. Code launched from 44d0449; result row records 8620002, the later log-only commit present at completion.
+
+- Mistake-sheet generation completed successfully on all 12,077 validation photos. Verified five PNGs and their 48-row CSVs. Exported-model accuracy reconstructed from each city's printed error counts matches experiments.csv (0.5556 overall, all five per-city values). Source: results/local_logs/b_mobilenet320_mistakes.txt.
+- Next: review the Track B mistakes and let the student choose whether to submit this model or run another experiment.
