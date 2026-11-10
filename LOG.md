@@ -183,3 +183,6 @@ End the log with your plan for what to try next.
 - Next: try the Colab GPU. If unavailable, stop and report; no automatic local fallback. Score and interpretation pending.
 
 - Tried reconnecting to the Colab T4 GPU after pushing 8fdbec9. Colab displayed "GPU 백엔드에 연결할 수 없음" and explicitly cited current usage limits. No GPU session or Mixup training was started. Did not select "Connect without GPU". The experiment remains queued; awaiting the student's decision before any local training.
+
+- Student approved normal local training after the Colab refusal: "then, lets just run it locally, normally." Starting the prepared six-epoch experiment on MPS with batch size 64 and four loader workers, matching the prior local run. No reduction in resolution or training budget. Confirmed the previous 55.56% model remains preserved in results/b_mobilenet320/.
+- Local launch wrapper exits only after train_b.py returns successfully and flushes output, avoiding the previously confirmed interpreter-finalisation hang after all artifacts and the experiment row are saved. It does not change the training procedure.
